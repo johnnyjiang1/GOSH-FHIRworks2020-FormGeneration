@@ -3,12 +3,14 @@ import tkinter as tk
 import tkinter.messagebox
 import docx
 from docx import Document
+import os
 
 fhir = fhir_parser.FHIR('https://localhost:5001/api/', verify_ssl=False)
 
 from tkinter import *
 import tkinter.filedialog
 
+observations = fhir.get_patient_observations('b905139e-1601-403c-9d85-f8e3997cdd19')
 id=''
 window = tk.Tk()
 window.title('Form generater')
@@ -26,6 +28,7 @@ def form_generation():
         messagebox.showwarning("Error", "Please search for a patient first")
         return
     f = tkinter.filedialog.asksaveasfile(filetypes = [('Word document 2007', 'docx')]).name
+    os.remove(f)
     if f == None:
         return
     try:
@@ -73,6 +76,9 @@ confirm_Button.pack(side='bottom')
 def id_input_confirm_hit():
     global id
     id = id_input.get()
+    if id == '':
+        messagebox.showerror(title='Error',message='Please input an ID.')
+        return
     try:
         patient = fhir.get_patient(id)
     except:
